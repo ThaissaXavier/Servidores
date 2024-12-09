@@ -1,0 +1,17 @@
+#!/bin/bash
+
+ip a
+
+echo "Informe seu ip"
+read ip
+
+ifconfig
+
+echo "Informe seu adaptador"
+read adaptador
+
+route add default gw $ip $adaptador
+ifconfig $adaptador $ip netmask 255.255.255.192 up
+
+echo "nameserver 8.8.8.8" > /etc/resolv.conf
+
