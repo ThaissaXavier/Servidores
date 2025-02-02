@@ -1,0 +1,72 @@
+#!/bin/bash
+
+# Função para instalar o isc-dhcp-server
+instalar_dhcp() {
+    sudo apt-get update
+    sudo apt-get install -y isc-dhcp-server
+    echo "isc-dhcp-server instalado com sucesso!"
+}
+
+# Função para configurar o DHCP
+configurar_dhcp() {
+   sudo  cat <<EOL > /etc/dhcp/dhcpd.conf
+# Configuração geral
+default-lease-time 600;
+max-lease-time 7200;
+
+# Configuração de sub-rede
+subnet 192.168.2.0 netmask 255.255.255.192 {
+    range 192.168.21.10 192.168.21.100;
+    option routers 192.168.1.1;
+    option domain-name-servers 8.8.8.8, 8.8.4.4;
+    #option domain-name "example.local";
+}
+EOL
+    echo "Arquivo de configuração DHCP configurado com sucesso!"
+}
+
+# Função para iniciar o serviço DHCP
+iniciar_dhcp() {
+    sudo systemctl start isc-dhcp-server
+    echo "Serviço DHCP iniciado com sucesso!"
+}
+
+# Função para parar o serviço DHCP
+parar_dhcp() {
+    sudo systemctl stop isc-dhcp-server
+    echo "Serviço DHCP parado com sucesso!"
+}
+
+# Função para reiniciar o serviço DHCP
+reiniciar_dhcp() {
+    sudo systemctl restart isc-dhcp-server
+    echo "Serviço DHCP reiniciado com sucesso!"
+}
+
+# Função para exibir ajuda
+help() {
+    echo "Uso: $0 [função]"
+    echo "Funções disponíveis:"
+    echo "  instalar       - Instala o isc-dhcp-server"
+    echo "  configurar     - Configura o arquivo DHCP"
+    echo "  iniciar        - Inicia o serviço DHCP"
+    echo "  parar          - Para o serviço DHCP"
+    echo "  reiniciar      - Reinicia o serviço DHCP"
+    echo "  help           - Exibe esta ajuda"
+}
+
+# Função principal
+main() {
+    case $1 in
+        instalar) instalar_dhcp ;;
+        configurar) configurar_dhcp ;;
+        iniciar) iniciar_dhcp ;;
+        parar) parar_dhcp ;;
+        reiniciar) reiniciar_dhcp ;;
+        help) help ;;
+        *) echo "Função inválida. Use 'help' para ver as opções disponíveis." ;;
+    esac
+}
+
+# Executar função principal com argumento fornecido
+main $1
