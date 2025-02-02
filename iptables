@@ -1,0 +1,89 @@
+#!/bin/bash
+
+install() {
+echo
+echo "Instalando o Serviço..."
+echo
+sudo apt-get update
+sudo apt-get install iptables
+echo
+echo "Serviço instalado!"
+echo
+}
+
+list() {
+echo
+echo "Lista regras definidas"
+echo
+echo "Regras de entrada"
+sudo ipatables -L INPUT --LINE-NUMBERS
+echo
+echo "Regras de saída"
+}
+
+start() {
+echo
+echo "Iniciando o Serviço..."
+echo
+sudo iptables -A INPUT -m multiport -p tcp --dport 80,443 -j REJECT
+    sudo iptables -A OUTPUT -m multiport -p tcp --dport 80,443 -j REJECT
+}
+
+stop() {
+echo
+echo "Parando o Serviço..."
+echo
+sudo iptables -D INPUT -m multiport -p tcp --dport 80,443 -j REJECT
+    sudo iptables -D OUTPUT -m multiport -p tcp --dport 80,443 -j REJECT
+}
+
+restart() {
+echo
+echo "Reiniciando o Serviço..."
+echo
+stop
+start
+}
+
+remover() {
+echo
+echo "Removendo iptables..."
+echo
+sudo apt remove iptables
+}
+
+ajuda() {
+echo
+echo "Comandos disponiveis:"
+echo "  install   - Realiza a instalação do iptables;"
+echo "  start - Inicia o serviço iptables;"
+echo "  stop    - Limpa as regras;"
+echo "  restart - Reinincia as regras;"
+echo "  list  - Lista as regras;"
+echo "  remove    - Desinstala o iptables"
+}
+
+case "$1" in
+install)
+ install;;
+start)
+ start;;
+stop)
+ stop;;
+restart)
+ restart;;
+list)
+          list;;
+remove)
+ remove;;
+remover)
+ remover;;
+    help)
+     help;;
+*)
+     echo
+ echo "Comando inválido! Utilize: $0 {comando}"
+ echo "Dúvidas? Utilize o comando 'ajuda'"
+ echo
+ exit 1;;
+esac
